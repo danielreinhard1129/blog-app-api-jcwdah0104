@@ -4,8 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Sample {
@@ -15,4 +16,32 @@ model Sample {
   updatedAt DateTime @updatedAt
 
   @@map("samples")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blogs     Blog[]
+
+  @@map("users")
+}
+
+model Blog {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String   @unique
+  description String   @db.Text
+  thumbnail   String
+  category    String
+  content     String   @db.Text
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("blogs")
 }
